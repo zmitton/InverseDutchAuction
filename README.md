@@ -1,7 +1,7 @@
 Inverse Dutch Auction
 ====================
 
-<img src="logo.png" />
+<img src="drawing.jpg" alt="Drawing" style="width: 200px;"/>
 
 Truffle Project containing the Inverse Dutch Auction smart contracts. Ideas were taking from he Gnosis token launch and improved upon. The auction drops the ETH being raised over time while fixing the number of tokens sold. 
 
