@@ -5,6 +5,9 @@ Inverse Dutch Auction
 
 Truffle Project containing the Inverse Dutch Auction smart contracts. Ideas were taking from he Gnosis token launch and improved upon. The auction drops the ETH being raised over time while fixing the number of tokens sold. 
 
+
+Why This Architecture
+---------------------
 The Gnosis model was revolutionary and afforded the following improvements:
 
 (1) It allowed participants to imply a market cap with there bid.
@@ -19,7 +22,7 @@ The Inverse Dutch Auction presented here, solves these problems entirely. Instea
 
 
 Install
--------------
+-------
 ### Get Truffle:
 ```
 npm install -g truffle
@@ -31,14 +34,14 @@ git clone https://github.com/zmitton/InverseDutchAuction.git
 ```
 
 Test
--------------
+----
 ### Run the Tests:
 ```
 truffle test
 ```
 
 Deploy
--------------
+------
 ### Deploy your Token and Auction:
 Change the migration arguments in `migrations/2_deploy_contracts.js`.
 ```
@@ -46,10 +49,10 @@ truffle migrate --network rinkeby
 ```
 
 License
--------------
+-------
 All smart contracts are released under GPL v.3.
 
 Contributors
--------------
+------------
 - Zac Mitton ([zmitton](https://github.com/zmitton))
 - Stefan George ([Georgi87](https://github.com/Georgi87))
