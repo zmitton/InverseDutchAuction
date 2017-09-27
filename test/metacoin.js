@@ -1,63 +1,61 @@
-var RightToken = artifacts.require("./RightToken.sol");
+var TrueToken = artifacts.require("./token/TrueToken.sol");
+var InverseDutchAuction = artifacts.require("./InverseDutchAuction.sol");
+var W = require('./W'); //a helper like web3 but with promises
 
-contract('RightToken', function(accounts) {
-  it("should put 10000 RightToken in the first account", function() {
-    return RightToken.deployed().then(function(instance) {
-      return instance.getBalance.call(accounts[0]);
-    }).then(function(balance) {
-      assert.equal(balance.valueOf(), 10000, "10000 wasn't in the first account");
+contract('TrueToken', function(accounts) {
+  it("token should have the right init values", function() {
+    var trueToken 
+    return TrueToken.deployed().then(function(_trueToken) {
+      trueToken = _trueToken
+      return trueToken.name();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned, "True Token", "name");
+      return trueToken.decimals();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned.toNumber(), 18, "decimals");
+      return trueToken.symbol();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned, "TRU", "symbol");
+      return trueToken.version();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned, "H0.1", "version");
+      return
     });
   });
-  it("should call a function that depends on a linked library", function() {
-    var meta;
-    var RightTokenBalance;
-    var RightTokenEthBalance;
 
-    return RightToken.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(accounts[0]);
-    }).then(function(outCoinBalance) {
-      RightTokenBalance = outCoinBalance.toNumber();
-      return meta.getBalanceInEth.call(accounts[0]);
-    }).then(function(outCoinBalanceEth) {
-      RightTokenEthBalance = outCoinBalanceEth.toNumber();
-    }).then(function() {
-      assert.equal(RightTokenEthBalance, 2 * RightTokenBalance, "Library function returned unexpected function, linkage may be broken");
-    });
-  });
-  it("should send coin correctly", function() {
-    var meta;
-
-    // Get initial balances of first and second account.
-    var account_one = accounts[0];
-    var account_two = accounts[1];
-
-    var account_one_starting_balance;
-    var account_two_starting_balance;
-    var account_one_ending_balance;
-    var account_two_ending_balance;
-
-    var amount = 10;
-
-    return RightToken.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account_one);
-    }).then(function(balance) {
-      account_one_starting_balance = balance.toNumber();
-      return meta.getBalance.call(account_two);
-    }).then(function(balance) {
-      account_two_starting_balance = balance.toNumber();
-      return meta.sendCoin(account_two, amount, {from: account_one});
-    }).then(function() {
-      return meta.getBalance.call(account_one);
-    }).then(function(balance) {
-      account_one_ending_balance = balance.toNumber();
-      return meta.getBalance.call(account_two);
-    }).then(function(balance) {
-      account_two_ending_balance = balance.toNumber();
-
-      assert.equal(account_one_ending_balance, account_one_starting_balance - amount, "Amount wasn't correctly taken from the sender");
-      assert.equal(account_two_ending_balance, account_two_starting_balance + amount, "Amount wasn't correctly sent to the receiver");
+  it("auction should have the right init values", function() {
+    var inverseDutchAuction, trueToken, blockNumber
+    return InverseDutchAuction.deployed().then(function(_inverseDutchAuction) {
+      inverseDutchAuction = _inverseDutchAuction
+      return TrueToken.deployed();
+    }).then(function(_trueToken) {
+      trueToken = _trueToken
+      return inverseDutchAuction.multiplier();
+    }).then(function(valueReturned) {
+      // console.log("Multiplier:", valueReturned.toNumber())
+      assert.approximately(valueReturned.toNumber(), 192e26, 1e20, "multiplier");
+      return inverseDutchAuction.tokenParticlesForSale();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned.toNumber(), 3e25, "tokenParticlesForSale");
+      return inverseDutchAuction.totalWeiReceived();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned.toNumber(), 0, "totalWeiReceived");
+      return inverseDutchAuction.weiFloor();
+    }).then(function(valueReturned) {
+      assert.approximately(valueReturned.toNumber() / 1e18 * 300, 10000000 , 2, "weiFloor");
+      return W.eth_blockNumber();
+    }).then(function(valueReturned) {
+      blockNumber = valueReturned
+      return inverseDutchAuction.startBlock();
+    }).then(function(valueReturned) {
+      assert.approximately(valueReturned.toNumber(), blockNumber + 15, 2, "startBlock");
+      return inverseDutchAuction.wallet();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned, accounts[0], "wallet");
+      return inverseDutchAuction.token();
+    }).then(function(valueReturned) {
+      assert.equal(valueReturned, trueToken.address, "token");
+      return
     });
   });
 });
