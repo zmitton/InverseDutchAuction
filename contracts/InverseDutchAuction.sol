@@ -1,10 +1,10 @@
 pragma solidity ^0.4.11;
 import "./token/ERC20Token.sol";
 
-/// @title Dutch Auction Contract - A reverse dutch auction that drops the ETH
+/// @title Inverse Dutch Auction Contract - A reverse dutch auction that drops the ETH
 /// being raised over time while fixing the number of tokens sold.
 /// @author Zac Mitton - <zacmitton22@gmail.com>
-//  from a similar auction contract written by Stefan George - <stefan@gnosis.pm>
+//  Modified from a similar auction contract written by Stefan George - <stefan@gnosis.pm>
 contract InverseDutchAuction {
     event BidSubmission(address indexed sender, uint256 amount);
 
