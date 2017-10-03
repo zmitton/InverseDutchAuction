@@ -1,6 +1,6 @@
 var TrueToken = artifacts.require("./token/TrueToken.sol");
 var InverseDutchAuction = artifacts.require("./InverseDutchAuction.sol");
-var W = require('./W'); //a helper like web3 but with promises
+var H = require('./helpers'); //a helper like web3 but with promises
 
 contract('TrueToken', function(accounts) {
   it("token should have the right init values", function() {
@@ -32,7 +32,6 @@ contract('TrueToken', function(accounts) {
       trueToken = _trueToken
       return inverseDutchAuction.multiplier();
     }).then(function(valueReturned) {
-      // console.log("Multiplier:", valueReturned.toNumber())
       assert.approximately(valueReturned.toNumber(), 192e26, 1e20, "multiplier");
       return inverseDutchAuction.tokenParticlesForSale();
     }).then(function(valueReturned) {
@@ -43,7 +42,7 @@ contract('TrueToken', function(accounts) {
       return inverseDutchAuction.weiFloor();
     }).then(function(valueReturned) {
       assert.approximately(valueReturned.toNumber() / 1e18 * 300, 10000000 , 2, "weiFloor");
-      return W.eth_blockNumber();
+      return H.eth_blockNumber();
     }).then(function(valueReturned) {
       blockNumber = valueReturned
       return inverseDutchAuction.startBlock();

@@ -1,6 +1,6 @@
-var W = function(){};
+var H = function(){};
 
-W.eth_blockNumber = function () {
+H.eth_blockNumber = function () {
   return new Promise(function(resolve, reject){
     web3.currentProvider.sendAsync(
       {
@@ -14,7 +14,7 @@ W.eth_blockNumber = function () {
   })
 }
 
-W.evm_increaseTime = function (seconds) {
+H.evm_increaseTime = function (seconds) {
   return new Promise(function(resolve, reject){
     web3.currentProvider.sendAsync(
       {
@@ -28,4 +28,4 @@ W.evm_increaseTime = function (seconds) {
   })
 }
 
-module.exports = W
+module.exports = H

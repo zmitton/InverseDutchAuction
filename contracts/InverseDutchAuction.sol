@@ -1,10 +1,10 @@
 pragma solidity ^0.4.11;
 import "./token/ERC20Token.sol";
 
-/// @title Inverse Dutch Auction Contract - A reverse dutch auction that drops the ETH
-/// being raised over time while fixing the number of tokens sold.
+/// @title Inverse Dutch Auction Contract - A dutch auction that drops the ETH
+//    being raised over time while fixing the number of tokens sold.
 /// @author Zac Mitton - <zacmitton22@gmail.com>
-//  Modified from a similar auction contract written by Stefan George - <stefan@gnosis.pm>
+//    Modified from the Gnosis Reverse Dutch Auction by Stefan George - <stefan@gnosis.pm>
 contract InverseDutchAuction {
     event BidSubmission(address indexed sender, uint256 amount);
 
@@ -50,7 +50,7 @@ contract InverseDutchAuction {
         startBlock = block.number + ((startTime - now)/15);
         weiFloor = usdFloor * WEI_PER_ETH / usdPerEth;
         multiplier = usdTargetAfter1Day * WEI_PER_ETH * BLOCKS_PER_DAY / usdPerEth;
-        stage = Stages.Started;
+        // stage = Stages.Deployed; // is this required or will it be default?
     }
 
     /// @dev Returns correct stage, after updating (if relevant)
@@ -64,8 +64,12 @@ contract InverseDutchAuction {
             stage = Stages.Started;
         }
         if(stage == Stages.Started){
-            if(weiCap() < weiFloor ){
-                stage = Stages.Reverted;
+            if(weiCap() <= weiFloor){
+                if(totalWeiReceived < weiFloor){
+                    stage = Stages.Reverted;
+                }else{
+                    stage = Stages.Fulfilled;
+                }
             } else if(weiCap() <= totalWeiReceived){
                 stage = Stages.Fulfilled;
             }
@@ -103,12 +107,10 @@ contract InverseDutchAuction {
     }
 
     //read only
+    /// @dev Gives the Wei Cap implied by a bid at current moment in time
+    // note that although its read only, return values do change automatically over time.
     function weiCap() constant returns(uint){
         return multiplier / (block.number - startBlock);
-    }
-    // sanity check, remove after testing and create a js helper
-    function usdCap() constant returns(uint){
-        return weiCap() * 300 / WEI_PER_ETH; // $300ish
     }
 
     //private
@@ -121,28 +123,26 @@ contract InverseDutchAuction {
 }
 
 
-// `bid` returned (uint amount) //z: question why return for external tx?
-
-// SCHEDULE
-// Wk -> $M
-// ===========
-// 0  -> Infinity
-// 1  -> 1000
-// 2  ->  500
-// 3  ->  333
-// 4  ->  250
-// 5  ->  199
-// 6  ->  166
-// 7  ->  142
-// 8  ->  125
-// 9  ->  111
-// 10 ->  100
-// 11 ->   90
-// 12 ->   83
-// 13 ->   76
-// 14 ->   71
-// 15 ->   66
-// 16 ->   62
+// EXAMPLE SCHEDULE
+// Day -> $M
+// ---------------
+// 0   -> Infinity
+// 1   -> 1000
+// 2   ->  500
+// 3   ->  333
+// 4   ->  250
+// 5   ->  199
+// 6   ->  166
+// 7   ->  142
+// 8   ->  125
+// 9   ->  111
+// 10  ->  100
+// 11  ->   90
+// 12  ->   83
+// 13  ->   76
+// 14  ->   71
+// 15  ->   66
+// 16  ->   62
 // ...
-// 32 ->   31
+// 32  ->   31
 
